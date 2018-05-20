@@ -1,8 +1,15 @@
 package com.amit.wiprocodetest;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     //Not able to bind with butterknife
     SwipeRefreshLayout mSwipeRefreshLayout ;
     List<Row> row;
+    Retrofit retrofit;
 
 
     @Override
@@ -58,12 +66,65 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         /*Using Retrofit to fetch the JSON data
         * Build the retrofit object*/
-        Retrofit retrofit = new Retrofit.Builder()
+         retrofit = new Retrofit.Builder()
                 .baseUrl(ItemInterface.URL)
                 .addConverterFactory(GsonConverterFactory.create()) //User GSON Parsing
                 .build();
 
+    }
 
+
+
+    /************************HANDLING ACTIVITY LIFE CYCLES *************************/
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        /*Check for internet connection when app is launched.
+        If data is not turned on redirect to switch on data.
+        Otherwise end the app*/
+        checkInternetConnection();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //load the data in RecyclerView by using Retrofit
+        loadDataIntoRecyclerView();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        /*Handle the application when back pressed
+        * Avoid restart of app while bringing it back to foreground*/
+        Intent setIntent = new Intent(Intent.ACTION_MAIN);
+        setIntent.addCategory(Intent.CATEGORY_HOME);
+        setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(setIntent);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //Unregister the listeners to avoid memory leak
+        mSwipeRefreshLayout.setOnRefreshListener(null);
+    }
+
+
+
+
+
+
+    /************************METHOD IMPLEMENTATIONS *************************/
+
+    /*Implementation of Retrofit */
+    private void loadDataIntoRecyclerView() {
         //Implement Interface
         ItemInterface itemInterface = retrofit.create(ItemInterface.class);
 
@@ -84,37 +145,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 Log.e("MAIN Error", t.toString());
             }
         });
-
-
     }
-
-
-  /*  @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
-
 
 
     /*Implement onRefresh from SwipeRefreshLayout.OnRefreshListener
-     * to Refresh the RecyclerView */
+             * to Refresh the RecyclerView */
     @Override
     public void onRefresh() {
 
@@ -129,4 +164,41 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         }, 3000);
         Log.e("Main", "Refreshing");
     }
+
+
+
+    /*Check for internet connection when app is launched
+    * If data is not turned on redirect to switch on data
+    * otherwise end the app*/
+    private void checkInternetConnection() {
+        ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = null;
+        if (cm != null) {
+            activeNetwork = cm.getActiveNetworkInfo();
+        }
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        if (!isConnected) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("Need Internet connection!");
+            builder.setMessage("Turn on internet connection to use the features.");
+            builder.setCancelable(false);
+            builder.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                    startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                    finish();
+                }
+            });
+            builder.show();
+        }
+    }
+
 }
