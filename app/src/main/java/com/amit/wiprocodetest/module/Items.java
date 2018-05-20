@@ -1,9 +1,10 @@
 
 package com.amit.wiprocodetest.module;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 /*Using http://www.jsonschema2pojo.org/
 * to create POJO classes.*/
