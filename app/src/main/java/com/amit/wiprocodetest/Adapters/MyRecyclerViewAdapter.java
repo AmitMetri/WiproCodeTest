@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amit.wiprocodetest.MainActivity;
 import com.amit.wiprocodetest.R;
 import com.amit.wiprocodetest.module.Row;
 import com.bumptech.glide.Glide;
@@ -22,8 +23,8 @@ import java.util.List;
 
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.GithubViewHolder>{
 
-    private  Context context;
     private List<Row> data;
+    private Context context;
 
     //Constructor
     public MyRecyclerViewAdapter(Context context, List<Row> data){

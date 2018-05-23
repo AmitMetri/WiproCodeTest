@@ -71,6 +71,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .addConverterFactory(GsonConverterFactory.create()) //User GSON Parsing
                 .build();
 
+        //load the data in RecyclerView by using Retrofit
+        loadDataIntoRecyclerView();
+
     }
 
 
@@ -89,8 +92,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     protected void onResume() {
         super.onResume();
-        //load the data in RecyclerView by using Retrofit
-        loadDataIntoRecyclerView();
     }
 
 
@@ -153,6 +154,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     public void onRefresh() {
 
+        //Check internet connection when refreshed
+        checkInternetConnection();
+
         new MyRecyclerViewAdapter(getApplicationContext(),row).notifyDataSetChanged();
 
         new Handler().postDelayed(new Runnable() {
@@ -180,8 +184,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
         if (!isConnected) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setTitle("Need Internet connection!");
-            builder.setMessage("Turn on internet connection to use the features.");
+            builder.setTitle(R.string.need_internet_conn);
+            builder.setMessage(R.string.tun_on_data);
             builder.setCancelable(false);
             builder.setPositiveButton("Turn On", new DialogInterface.OnClickListener() {
                 @Override
@@ -201,4 +205,13 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         }
     }
 
+
+    /*Try to load data after returning from Settings page.
+    * Successful if data connection exists*/
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //load the data in RecyclerView by using Retrofit
+        loadDataIntoRecyclerView();
+    }
 }

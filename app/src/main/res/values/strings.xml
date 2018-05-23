@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">WiproCodeTest</string>
     <string name="action_settings">Settings</string>
+    <string name="card_text">Card text</string>
+    <string name="image_space">image_space</string>
+    <string name="description">Description</string>
+    <string name="need_internet_conn">Need Internet connection!</string>
+    <string name="tun_on_data">Turn on internet connection to use the features.</string>
 </resources>
