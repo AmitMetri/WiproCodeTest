@@ -1,9 +1,7 @@
 package com.amit.wiprocodetest;
 
-import android.app.Activity;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.ActivityTestCase;
 import android.view.View;
 
 import org.junit.After;
@@ -12,7 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by dell on 5/20/2018.

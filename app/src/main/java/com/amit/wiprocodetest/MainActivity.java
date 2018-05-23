@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -15,10 +14,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.DragEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 
 import com.amit.wiprocodetest.Adapters.MyRecyclerViewAdapter;
 import com.amit.wiprocodetest.Interfaces.ItemInterface;
@@ -157,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         //Check internet connection when refreshed
         checkInternetConnection();
 
-        new MyRecyclerViewAdapter(getApplicationContext(),row).notifyDataSetChanged();
+        new MyRecyclerViewAdapter(getApplicationContext(), row).notifyDataSetChanged();
 
         new Handler().postDelayed(new Runnable() {
             @Override

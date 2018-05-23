@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.amit.wiprocodetest.MainActivity;
 import com.amit.wiprocodetest.R;
 import com.amit.wiprocodetest.module.Row;
 import com.bumptech.glide.Glide;
