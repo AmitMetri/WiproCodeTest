@@ -3,6 +3,7 @@ package com.amit.wiprocodetest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -14,11 +15,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.amit.wiprocodetest.Adapters.MyRecyclerViewAdapter;
 import com.amit.wiprocodetest.Interfaces.ItemInterface;
 import com.amit.wiprocodetest.module.Items;
 import com.amit.wiprocodetest.module.Row;
+import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -40,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     SwipeRefreshLayout mSwipeRefreshLayout ;
     List<Row> row;
     Retrofit retrofit;
+    SharedPreferences  sharedPreferences ;
 
 
     @Override
@@ -57,11 +61,12 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         //Initialize SwipeRefreshLayout and setOnRefreshListener
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
         mSwipeRefreshLayout.setOnRefreshListener(MainActivity.this);
-
+        //Initialize SharedPreferences to handle offline mode
+        sharedPreferences =  getPreferences(MODE_PRIVATE);
 
         /*Using Retrofit to fetch the JSON data
         * Build the retrofit object*/
-         retrofit = new Retrofit.Builder()
+        retrofit = new Retrofit.Builder()
                 .baseUrl(ItemInterface.URL)
                 .addConverterFactory(GsonConverterFactory.create()) //User GSON Parsing
                 .build();
@@ -134,6 +139,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 getSupportActionBar().setTitle(items.getTitle());
                 row = items.getRows();
                 myRecyclerView.setAdapter(new MyRecyclerViewAdapter(getApplicationContext(), row));
+
+                /* Created by Amit on 5/25/2018.
+                * Save the JSON object for offline usage.
+                * Using SharedPreferences as a cache memory
+                * to load the data when device is offline*/
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                Gson gson = new Gson();
+                String json = gson.toJson(items);
+                Log.e("Offline", json);
+                editor.putString("Offline_Object", json);
+                editor.apply();
             }
 
             @Override
@@ -193,7 +209,23 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
-                    finish();
+                    //finish();
+
+                    /* Created by Amit on 5/25/2018.
+                    * When there is no Internet connection,
+                    * load the data from SharedPreferences
+                    * SharedPreferences act as cache memory here */
+                    Gson gson = new Gson();
+                    String json = sharedPreferences.getString("Offline_Object", "");
+                    Items items = gson.fromJson(json, Items.class);
+                    if(items!=null) {
+                        getSupportActionBar().setTitle(items.getTitle());
+                        row = items.getRows();
+                        myRecyclerView.setAdapter(new MyRecyclerViewAdapter(getApplicationContext(), row));
+                    }else{
+                        checkInternetConnection();
+                        Toast.makeText(getApplicationContext(),R.string.no_pri_data, Toast.LENGTH_LONG).show();
+                    }
                 }
             });
             builder.show();

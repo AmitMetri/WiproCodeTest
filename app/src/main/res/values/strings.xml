@@ -5,5 +5,6 @@
     <string name="image_space">image_space</string>
     <string name="description">Description</string>
     <string name="need_internet_conn">Need Internet connection!</string>
-    <string name="tun_on_data">Turn on internet connection to use the features.</string>
+    <string name="tun_on_data">Turn on internet connection for recent updates.</string>
+    <string name="no_pri_data">No prior data available. Connect to Internet.</string>
 </resources>
