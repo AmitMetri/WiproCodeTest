@@ -41,8 +41,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:adjustViewBounds="true"
+                android:padding="5dp"
                 android:contentDescription="@string/image_space"
-                android:scaleType="fitXY" />
+                android:scaleType="fitXY"/>
         </LinearLayout>
 
     </LinearLayout>
